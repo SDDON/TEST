@@ -1,0 +1,17 @@
+[project]
+name = "youtube-live-subtitles"
+version = "0.1.0"
+description = "Real-time subtitles for YouTube Live streams."
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "websockets",
+    "yt-dlp",
+    # "openai-whisper", # 추후 사용할 STT 라이브러리를 추가하세요.
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest",
+]

@@ -1,0 +1,25 @@
+body {
+    font-family: sans-serif;
+    width: 300px;
+    padding: 10px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input[type="text"] {
+    width: 95%;
+    padding: 5px;
+}
+
+button {
+    padding: 8px;
+    cursor: pointer;
+}
+
+p {
+    font-size: 0.9em;
+}
