@@ -1,17 +1,53 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
+from fastapi.middleware.cors import CORSMiddleware
 from .services.websocket_manager import WebSocketManager
 import logging
+import yt_dlp
+import os
+from pydantic import BaseModel
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+# CORS 미들웨어 추가
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 모든 오리진 허용
+    allow_credentials=True,
+    allow_methods=["*"],  # 모든 메소드 허용
+    allow_headers=["*"],  # 모든 헤더 허용
+)
+
 manager = WebSocketManager()
+
+DOWNLOAD_DIR = "e:\\TEST\\Server\\downloads"
+if not os.path.exists(DOWNLOAD_DIR):
+    os.makedirs(DOWNLOAD_DIR)
+
+class VideoRequest(BaseModel):
+    url: str
 
 @app.get("/")
 def read_root():
     return {"Project": "YouTube Live Subtitles"}
+
+@app.post("/download")
+async def download_video(request: VideoRequest):
+    logger.info(f"Received download request for URL: {request.url}")
+    ydl_opts = {
+        'outtmpl': os.path.join(DOWNLOAD_DIR, '%(title)s.%(ext)s'),
+        'format': 'mp4'
+    }
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([request.url])
+        return {"status": "success", "message": "Video downloaded successfully."}
+    except Exception as e:
+        logger.error(f"Error downloading video: {e}")
+        return {"status": "error", "message": str(e)}
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
