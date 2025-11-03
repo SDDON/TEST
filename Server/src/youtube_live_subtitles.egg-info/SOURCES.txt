@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+src/main.py
+src/services/__init__.py
+src/services/audio_service.py
+src/services/stt_service.py
+src/services/websocket_manager.py
+src/utils/__init__.py
+src/youtube_live_subtitles.egg-info/PKG-INFO
+src/youtube_live_subtitles.egg-info/SOURCES.txt
+src/youtube_live_subtitles.egg-info/dependency_links.txt
+src/youtube_live_subtitles.egg-info/requires.txt
+src/youtube_live_subtitles.egg-info/top_level.txt

@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
 
         // Connect to the WebSocket server
-        socket = new WebSocket('ws://localhost:8000/ws');
+        socket = new WebSocket('ws://localhost:8001/ws');
 
         socket.onopen = () => {
             console.log('WebSocket connection established.');
