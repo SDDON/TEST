@@ -1,22 +1,25 @@
 const startButton = document.getElementById('startButton');
 const youtubeUrlInput = document.getElementById('youtubeUrl');
 const statusDisplay = document.getElementById('status');
+const audioOnlyModeCheckbox = document.getElementById('audioOnlyMode');
 
 startButton.addEventListener('click', () => {
     const url = youtubeUrlInput.value;
     if (url) {
-        statusDisplay.textContent = 'Status: Downloading...';
+        const mode = audioOnlyModeCheckbox.checked ? 'audio' : 'video';
+        statusDisplay.textContent = `Status: Requesting ${mode} download...`;
+
         fetch('http://localhost:8001/download', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ url: url }),
+            body: JSON.stringify({ url: url, mode: mode }),
         })
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                statusDisplay.textContent = 'Status: Download successful!';
+                statusDisplay.textContent = `Status: ${data.message}`;
             } else {
                 statusDisplay.textContent = `Status: Error - ${data.message}`;
             }

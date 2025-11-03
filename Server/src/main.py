@@ -29,6 +29,7 @@ if not os.path.exists(DOWNLOAD_DIR):
 
 class VideoRequest(BaseModel):
     url: str
+    mode: str = 'video'  # 'video' or 'audio'
 
 @app.get("/")
 def read_root():
@@ -36,17 +37,34 @@ def read_root():
 
 @app.post("/download")
 async def download_video(request: VideoRequest):
-    logger.info(f"Received download request for URL: {request.url}")
-    ydl_opts = {
-        'outtmpl': os.path.join(DOWNLOAD_DIR, '%(title)s.%(ext)s'),
-        'format': 'mp4'
-    }
+    logger.info(f"Received download request for URL: {request.url} with mode: {request.mode}")
+    
+    # 음성 추출은 ffmpeg가 필요합니다.
+    if request.mode == 'audio':
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+            'outtmpl': os.path.join(DOWNLOAD_DIR, '%(title)s.%(ext)s'),
+            'ffmpeg_location': 'C:\\ProgramData\\chocolatey\\bin',
+        }
+        message = "Audio extracted successfully."
+    else: # video mode
+        ydl_opts = {
+            'outtmpl': os.path.join(DOWNLOAD_DIR, '%(title)s.%(ext)s'),
+            'format': 'mp4'
+        }
+        message = "Video downloaded successfully."
+
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([request.url])
-        return {"status": "success", "message": "Video downloaded successfully."}
+        return {"status": "success", "message": message}
     except Exception as e:
-        logger.error(f"Error downloading video: {e}")
+        logger.error(f"Error processing video: {e}")
         return {"status": "error", "message": str(e)}
 
 @app.websocket("/ws")
